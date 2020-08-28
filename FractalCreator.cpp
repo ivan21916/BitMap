@@ -1,8 +1,10 @@
 ﻿#include <iostream>
 //#include "bitmapfileheader.h" 
 //#include "bitmapinfoheader.h"
-//#include "FractalCreator/bitmap.h"
 #include "bitmap.h"
+#include <cstdint>
+#include "MandelBrot.h"
+
 using namespace std;
 using namespace bitmapstruct;
 
@@ -12,14 +14,37 @@ int main() {
 
 	BitMap bitmap(WIDTH, HEIGHT);
 
-	bitmap.setPixel(WIDTH / 2, HEIGHT / 2, 255, 0, 0);
+	double min = 999999;
+	double max = -999999;
+
+
 
 	for (int y = 0; y < HEIGHT; y++) {
 		for (int x = 0; x < WIDTH; x++) {
-			bitmap.setPixel(x, y, 255, 0, 0);
+			double xFractal = (x - WIDTH / 2)*(2.0 / WIDTH); // 要讓xFractal從-1~1, 首先 x - WIDTH/2會讓x從(0-800/2)=-400到(799-800/2)=400(接近), 再除以800/2
+			double yFractal = (y - HEIGHT / 2)*(2.0 / HEIGHT);
+
+			int iterations = MandelBrot::getIteration(xFractal, yFractal);
+
+			uint8_t red = (uint8_t)(256*(double)iterations / MandelBrot::MAX_ITERATIONS); // 必須將型態轉換成double
+
+			//if (xFractal < min) {
+			//	min = xFractal; // 只會執行一次(0-800/2)*(2/800) = -1
+			//}
+			//if (xFractal > max) {
+			//	max = xFractal; // 會執行x++到799, (799-800/2)*(2/800) = 0.9975
+			//}
+			bitmap.setPixel(x, y, red, red, red);
+			if (red < min) {
+				min = red; 
+			}
+			if (red > max) {
+				max = red; 
+			}
 		}
 	}
 
+	cout << min << ", " << max << endl;
 	bitmap.write("test.bmp");
 
 
