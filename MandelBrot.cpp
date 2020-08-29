@@ -29,7 +29,7 @@ int MandelBrot::getIteration(double x, double y) { // 取得迭代次數
 
 		iterations++;
 	}
-
+	
 	return iterations;
 }
 

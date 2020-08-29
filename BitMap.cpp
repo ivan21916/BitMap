@@ -45,7 +45,7 @@ bool BitMap::write(string filename){
 void BitMap::setPixel(int x, int y, uint8_t red, uint8_t green, uint8_t blue){
 	uint8_t* pPixel = m_pPixels.get(); // unique_ptr不能被轉換為uint8_t, 但是可以使用get()來取得一個由unique_ptr管理的pointer(同樣指向m_pPixels)
 
-	pPixel += (y * 3) * m_width + (x * 3);
+	pPixel += (y * 3) * m_width + (x * 3); // 此為指標pPixel往右移動了(y*3)*m_width+(x*3)格(byte)記憶體,y*m_width為長乘寬, x為右移到目標位置
 
 	pPixel[0] = blue; // 因為bitmap是little endian format, 所以記憶體會從數值小的開始存(反向存取)
 	pPixel[1] = green;
