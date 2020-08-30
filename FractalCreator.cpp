@@ -6,37 +6,49 @@
 #include "MandelBrot.h"
 #include <memory>
 #include <math.h> // 為了使用power funciton	
+#include "ZoomList.h"
+#include "FractalCreator.h"
 
 using namespace std;
 using namespace bitmapstruct;
 
 int main() {
-	int const WIDTH = 800;
-	int const HEIGHT = 600;
+	//int const m_width = 800;
+	//int const m_height = 600;
 
-	BitMap bitmap(WIDTH, HEIGHT);
+	//BitMap m_bitmap(w_width, w_height);
+	int height = 600;
+	FractalCreator fractalCreator(800, 600);
 
-	double min = 999999;
-	double max = -999999;
+	//fractalCreator.addZoom(Zoom(399, height-162, 0.1))
+	//double min = 999999;
+	//double max = -999999;
 
-	unique_ptr<int[]> histogram(new int[MandelBrot::MAX_ITERATIONS]{}); // 此陣列指標儲存了共有幾個iterations數相同的PIXEL(比如iterations 10次的有幾個, 50次的有幾個)
-	unique_ptr<int[]> fractal(new int[WIDTH*HEIGHT]{}); // 此陣列指標儲存了每個像素對應多少iterataions
-	for (int y = 0; y < HEIGHT; y++) {
-		for (int x = 0; x < WIDTH; x++) {
-			//double xFractal = (x - WIDTH / 2)*(2.0 / WIDTH); // 要讓xFractal從-1~1, 首先 x - WIDTH/2會讓x從(0-800/2)=-400到(799-800/2)=400(接近), 再除以800/2
-			double xFractal = (x - WIDTH / 2 - 200) * (2.0 / HEIGHT); // 將xFractal除以HEIGHT可以讓圖形比例更好(不會拉伸或壓縮), -200為往左位移200 (不會被切到)
-			double yFractal = (y - HEIGHT / 2)*(2.0 / HEIGHT);
+	//ZoomList m_zoomList(w_width, w_height);
 
-			int iterations = MandelBrot::getIteration(xFractal, yFractal);
+	//m_zoomList.add(Zoom(w_width / 2, w_height / 2, 4.0/w_width)); // 從中心點開始
+	//zoomlist.add(Zoom(399, HEIGHT - 162, 0.1));
+	//unique_ptr<int[]> m_histogram(new int[MandelBrot::MAX_ITERATIONS]{0}); // 此陣列指標儲存了共有幾個iterations數相同的PIXEL(比如iterations 10次的有幾個, 50次的有幾個)
+	//unique_ptr<int[]>	m_fractal(new int[w_width*w_height]{0}); // 此陣列指標儲存了每個像素對應多少iterataions
+	//for (int y = 0; y < w_height; y++) {
+	//	for (int x = 0; x < w_width; x++) {
+	//		//double xFractal = (x - WIDTH / 2)*(2.0 / WIDTH); // 要讓xFractal從-1~1, 首先 x - WIDTH/2會讓x從(0-800/2)=-400到(799-800/2)=400(接近), 再除以800/2
+	//		//double xFractal = (x - WIDTH / 2 - 200) * (2.0 / HEIGHT); // 將xFractal除以HEIGHT可以讓圖形比例更好(不會拉伸或壓縮), -200為往左位移200 (不會被切到)
+	//		//double yFractal = (y - HEIGHT / 2)*(2.0 / HEIGHT);
 
-			fractal[y * WIDTH + x] = iterations;
+	//		pair<double, double> coords = m_zoomList.doZoom(x, y);
 
-			if (iterations != MandelBrot::MAX_ITERATIONS) {
-				histogram[iterations]++; // 將有相同iteration數的pixel個數+1
-			}
-			
-		}
-	}
+	//		//int iterations = MandelBrot::getIteration(xFractal, yFractal);
+	//		int iterations = MandelBrot::getIteration(coords.first, coords.second);
+
+	//		m_fractal[y * w_width + x] = iterations;
+
+	//		if (iterations != MandelBrot::MAX_ITERATIONS) {
+	//			m_histogram[iterations]++; // 將有相同iteration數的pixel個數+1
+	//		}
+	//		
+	//	}
+	//}
 	//cout << endl;
 
 	//int count = 0;
@@ -47,32 +59,33 @@ int main() {
 	//cout << count << "; " << WIDTH * HEIGHT << endl; //count表示總共有多少個iterations結果(小於MAX_ITERATIONS), WIDTH*HEIGHT代表總共有多少個pixel
 
 	
-	int total = 0;
-	for (int i = 0; i < MandelBrot::MAX_ITERATIONS; i++){
-		total += histogram[i];
-	}
+	//int total = 0;
+	//for (int i = 0; i < MandelBrot::MAX_ITERATIONS; i++){
+	//	total += m_histogram[i];
+	//}
 
-	for (int y = 0; y < HEIGHT; y++) {
-		for (int x = 0; x < WIDTH; x++) {
+	//for (int y = 0; y < w_height; y++) {
+	//	for (int x = 0; x < w_width; x++) {
 
-			uint8_t red = 0; // 三個顏色設為0為黑色
-			uint8_t green = 0;
-			uint8_t blue = 0;
+	//		uint8_t red = 0; // 三個顏色預設為0為黑色
+	//		uint8_t green = 0;
+	//		uint8_t blue = 0;
 
-			int iterations = fractal[y * WIDTH + x];
+	//		int iterations = m_fractal[y * w_width + x];
 
-			//uint8_t color = (uint8_t)(256 * (double)iterations / MandelBrot::MAX_ITERATIONS); // 必須將型態轉換成double
+	//		//uint8_t color = (uint8_t)(256 * (double)iterations / MandelBrot::MAX_ITERATIONS); // 必須將型態轉換成double
 
-			if (iterations != MandelBrot::MAX_ITERATIONS) {
+	//		if (iterations != MandelBrot::MAX_ITERATIONS) {
 
-				double hue = 0.0;
+	//			double hue = 0.0;
 
-				for (int i = 0; i <= iterations; i++) {
-					hue += ((double)histogram[i]) / total; // 把由小到大的iterations個數除以所有iterations再相加(hue的範圍會從0~1)
-				}
+	//			for (int i = 0; i <= iterations; i++) {
+	//				hue += ((double)m_histogram[i]) / total; // 把由小到大的iterations個數除以所有iterations再相加(hue的範圍會從0~1)
+	//			}
 
-				green = pow(255, hue); // 255的hue次方 (hue從0~1), 這可以讓有更高iteration的pixel看起來更亮
-			}
+	//			//green = pow(255, hue); // 255的hue次方 (hue從0~1), 這可以讓有更高iteration的pixel看起來更亮
+	//			green = hue*255;
+	//		}
 
 			//color = color * color * color; // 使color增加more rapidly, 使圖片鮮明度, color不會影響記憶體, 因為color已經宣告為uint8_t, 只會在0-255之間
 			//if (xFractal < min) {
@@ -82,16 +95,20 @@ int main() {
 			//	max = xFractal; // 會執行x++到799, (799-800/2)*(2/800) = 0.9975
 			//}
 			//bitmap.setPixel(x, y, 0, color, 0);
-			bitmap.setPixel(x, y, red, green, blue);
+			//m_bitmap.setPixel(x, y, red, green, blue);
 			//if (color < min) { // 
 			//	min = color;
 			//}
 			//if (color > max) {
 			//	max = color;
 			//}
-		}
-	}
-	bitmap.write("test.bmp");
+	//	}
+	//}
+	//m_bitmap.write("test.bmp");
+	fractalCreator.calculateIteration();
+	fractalCreator.calculateTotalIteration();
+	fractalCreator.drawFractal();
+	fractalCreator.writeBitmap("test.bmp");
 	//cout << min << ", " << max << endl;
 
 
