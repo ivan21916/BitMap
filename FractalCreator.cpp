@@ -1,13 +1,13 @@
 ﻿#include <iostream>
-//#include "bitmapfileheader.h" 
-//#include "bitmapinfoheader.h"
-#include "bitmap.h"
-#include <cstdint>
-#include "MandelBrot.h"
-#include <memory>
-#include <math.h> // 為了使用power funciton	
-#include "ZoomList.h"
+//#include "bitmap.h"
+//#include <cstdint>
+//#include "MandelBrot.h"
+//#include <memory>
+//#include <math.h> // 為了使用power funciton	
+//#include "ZoomList.h"
 #include "FractalCreator.h"
+#include "RGB.h"
+#include "Zoom.h"
 
 using namespace std;
 using namespace bitmapstruct;
@@ -17,8 +17,18 @@ int main() {
 	//int const m_height = 600;
 
 	//BitMap m_bitmap(w_width, w_height);
-	int height = 600;
+
+	//int height = 600;
+
 	FractalCreator fractalCreator(800, 600);
+	
+	fractalCreator.addRange(0.0, RGB(0, 0, 0));
+	fractalCreator.addRange(0.3, RGB(255, 0, 0)); // range: 0~300 pixels
+	fractalCreator.addRange(0.5, RGB(255, 255, 0)); // range: 300~500 pixels
+	fractalCreator.addRange(1.0, RGB(255, 255, 255)); // range: 500~1000 pixels
+
+	fractalCreator.addZoom(Zoom(399, 162, 0.1));
+	fractalCreator.run("test.bmp");
 
 	//fractalCreator.addZoom(Zoom(399, height-162, 0.1))
 	//double min = 999999;
@@ -105,10 +115,10 @@ int main() {
 	//	}
 	//}
 	//m_bitmap.write("test.bmp");
-	fractalCreator.calculateIteration();
-	fractalCreator.calculateTotalIteration();
-	fractalCreator.drawFractal();
-	fractalCreator.writeBitmap("test.bmp");
+	//fractalCreator.calculateIteration();
+	//fractalCreator.calculateTotalIteration();
+	//fractalCreator.drawFractal();
+	//fractalCreator.writeBitmap("test.bmp");
 	//cout << min << ", " << max << endl;
 
 
