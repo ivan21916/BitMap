@@ -1,5 +1,6 @@
 #include "FractalCreator.h"
 #include "iostream"
+#include <assert.h>
 
 using namespace std;
 
@@ -29,6 +30,25 @@ void FractalCreator::addRange(double rangeEnd, const RGB& rgb) {
 	m_bGotFirstRange = true;
 
 }
+
+int FractalCreator::getRange(int iterations) const {
+	int range = 0;
+
+	for (int i = 1; i < m_ranges.size(); i++) { // 因為起始點fractalCreator.addRange(0.0, RGB(0, 0, 0))不比較, 所以從1開始
+		range = i;
+		if (m_ranges[i] > iterations) {
+			break;
+		}
+	}
+
+	range--; // 要獲得zero based index, 要將rage-1
+
+	assert(range > -1); // 此處須include assert.h來雙重檢查, 避免程式當掉
+	assert(range < m_ranges.size());
+
+	return range;
+}
+
 void FractalCreator::addZoom(const Zoom& zoom) {
 	m_zoomList.add(zoom);
 }
@@ -81,32 +101,51 @@ void FractalCreator::calculateTotalIteration() {
 
 void FractalCreator::drawFractal() { // second nested loop
 
-	RGB startColor(0, 0, 0);
-	RGB endColor(255, 136, 28);
-	RGB colorDiff = endColor - startColor;
+	//RGB startColor(0, 0, 0);
+	//RGB endColor(255, 136, 28);
+	//RGB colorDiff = endColor - startColor;
 
 	for (int y = 0; y < m_height; y++) {
 		for (int x = 0; x < m_width; x++) {
+
+			int iterations = m_fractal[y * m_width + x];
+
+			int range = getRange(iterations); // 首先先找出iterations落在的區間範圍
+			int rangeTotal = m_rangeTotals[range];
+			int rangeStart = m_ranges[range];
+
+			RGB& startColor = m_colors[range];
+			RGB& endColor = m_colors[range+1];
+			RGB colorDiff = endColor - startColor;
 
 			uint8_t red = 0; // 三個顏色預設為0為黑色
 			uint8_t green = 0;
 			uint8_t blue = 0;
 
-			int iterations = m_fractal[y * m_width + x];
-
 			//uint8_t color = (uint8_t)(256 * (double)iterations / MandelBrot::MAX_ITERATIONS); // 必須將型態轉換成double
 
 			if (iterations != MandelBrot::MAX_ITERATIONS) {
 
-				double hue = 0.0;
+				//double hue = 0.0;
 
-				for (int i = 0; i <= iterations; i++) {
-					hue += ((double)m_histogram[i]) / m_total; // 把由小到大的iterations個數除以所有iterations再相加(hue的範圍會從0~1)
+				//for (int i = 0; i <= iterations; i++) {
+				//	hue += ((double)m_histogram[i]) / m_total; // 把由小到大的iterations個數除以所有iterations再相加(hue的範圍會從0~1)
+				//}
+
+				int totalPixels = 0;
+
+				for (int i = rangeStart; i <= iterations; i++) {
+					totalPixels += m_histogram[i];
 				}
 
-				red = startColor.r + colorDiff.r * hue;
-				green = startColor.g + colorDiff.g * hue;
-				blue = startColor.b + colorDiff.b * hue;
+				//red = startColor.r + colorDiff.r * hue;
+				//green = startColor.g + colorDiff.g * hue;
+				//blue = startColor.b + colorDiff.b * hue;
+
+				red = startColor.r + colorDiff.r * (double)totalPixels/rangeTotal; // totalPixels/rangeTotal為0~1的值
+				green = startColor.g + colorDiff.g * (double)totalPixels / rangeTotal;
+				blue = startColor.b + colorDiff.b * (double)totalPixels / rangeTotal;
+
 				//green = pow(255, hue); // 255的hue次方 (hue從0~1), 這可以讓有更高iteration的pixel看起來更亮
 				//green = hue * 255;
 			}
